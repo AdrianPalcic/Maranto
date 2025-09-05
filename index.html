@@ -101,7 +101,7 @@
               src="/suit.jpg"
               alt="Muško odijelo premium kvalitete"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
           <div class="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
@@ -109,7 +109,7 @@
               src="/suit.jpg"
               alt="Muško odijelo premium kvalitete"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
           <div class="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
@@ -117,7 +117,7 @@
               src="/suit.jpg"
               alt="Muško odijelo premium kvalitete"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
           <div class="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
@@ -125,7 +125,7 @@
               src="/suit.jpg"
               alt="Muško odijelo premium kvalitete"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
           <div class="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
@@ -133,7 +133,7 @@
               src="/suit.jpg"
               alt="Muško odijelo premium kvalitete"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
           <div class="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
@@ -141,7 +141,7 @@
               src="/suit.jpg"
               alt="Muško odijelo premium kvalitete"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
         </div>
@@ -216,7 +216,7 @@
               src="/a.png"
               alt="Odijelo za vjenčanje"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
           <div class="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
@@ -224,7 +224,7 @@
               src="/b.png"
               alt="Elegantno svečano odijelo"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
           <div class="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
@@ -232,7 +232,7 @@
               src="/c.png"
               alt="Krojeno odijelo po mjeri"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
           <div class="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
@@ -240,7 +240,7 @@
               src="/d.png"
               alt="Moderno odijelo za posebne prigode"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
           <div class="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
@@ -248,7 +248,7 @@
               src="/e.png"
               alt="Klasično muško odijelo"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
           <div class="w-full h-[300px] sm:h-[400px] lg:h-[500px]">
@@ -256,7 +256,7 @@
               src="/f.png"
               alt="Lux odijelo za svečane događaje"
               loading="lazy"
-              class="w-full h-full object-cover"
+              class="fade-in w-full h-full object-cover"
             />
           </div>
         </div>
@@ -460,6 +460,7 @@
       const reviewText = document.querySelector(".relative.z-10 h1");
       const reviewAuthor = document.querySelector(".relative.z-10 p");
       const dots = document.querySelectorAll(".dot");
+      const images = document.querySelectorAll(".fade-in");
 
       function showReview(index) {
         const review = reviews[index];
@@ -492,6 +493,19 @@
       });
 
       showReview(0);
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+
+      images.forEach((img) => observer.observe(img));
     </script>
   </body>
 </html>
