@@ -255,13 +255,13 @@
 
           <div class="relative z-10 max-w-3xl">
             <h1
-              class="text-lg sm:text-2xl text-white font-light leading-relaxed"
+              class="text-lg sm:text-2xl text-white font-light leading-relaxed transition-opacity duration-300"
             >
               “Osjećao sam se kao pravi gentleman – odijelo mi je savršeno
               pristajalo.”
             </h1>
             <p
-              class="text-sm sm:text-base text-white uppercase opacity-80 mt-4"
+              class="text-sm sm:text-base text-white opacity-80 mt-4 transition-opacity duration-300"
             >
               Marko, Zagreb
             </p>
@@ -406,5 +406,62 @@
         </div>
       </footer>
     </main>
+
+    <script>
+      // 1. Definiraj recenzije
+      const reviews = [
+        {
+          text: "“Vrlo ugodno iskustvo! Osoblje je izuzetno ljubazno, susretljivo i profesionalno. Ponuda odijela je moderna i kvalitetna, a cijene su sasvim korektne s obzirom na ono što se nudi.”",
+          author: "Ivan Njavro",
+        },
+        {
+          text: "“Preporuke za odličnu uslugu i pomoć oko odabira odijela. Svakako se ponovno vraćam”",
+          author: "Mateo Ivanek",
+        },
+        {
+          text: "“Prepozitivna preporuka Laka komunikacija preko instagrama. Gospodin nas je docekao s osmijehom na licu, usluga odlicna i profesionalna.”",
+          author: "Helena Kranjec",
+        },
+        {
+          text: "“Kupio sam odijelo prije par mjeseci, i svima bi preoručio isto. Vrhunska odijela za svečane prigode.”",
+          author: "Andrija Blažević",
+        },
+      ];
+      const reviewText = document.querySelector(".relative.z-10 h1");
+      const reviewAuthor = document.querySelector(".relative.z-10 p");
+      const dots = document.querySelectorAll(".dot");
+
+      function showReview(index) {
+        const review = reviews[index];
+
+        reviewText.classList.add("opacity-0");
+        reviewAuthor.classList.add("opacity-0");
+
+        setTimeout(() => {
+          reviewText.textContent = review.text;
+          reviewAuthor.textContent = review.author;
+
+          // Fade in
+          reviewText.classList.remove("opacity-0");
+          reviewAuthor.classList.remove("opacity-0");
+        }, 300);
+
+        dots.forEach((dot, i) => {
+          if (i === index) {
+            dot.classList.add("bg-[#bc8e31]", "opacity-90");
+            dot.classList.remove("bg-white", "opacity-60");
+          } else {
+            dot.classList.remove("bg-[#bc8e31]", "opacity-90");
+            dot.classList.add("bg-white", "opacity-60");
+          }
+        });
+      }
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener("click", () => showReview(i));
+      });
+
+      showReview(0);
+    </script>
   </body>
 </html>
