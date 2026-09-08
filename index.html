@@ -10,8 +10,6 @@
       href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Cinzel:wght@400..900&family=Cormorant:ital,wght@0,300..700;1,300..700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
-    <script src="https://unpkg.com/heroicons@2.1.1/24/outline/academic-cap.svg"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -446,14 +444,48 @@
         <div id="bkLoading" class="text-center py-10">Učitavanje termina...</div>
 
         <div id="bkForm" class="hidden max-w-md mx-auto">
-          <label class="block mb-1 tag text-sm">Odaberite datum</label>
-          <select
-            id="bkDateSelect"
-            class="w-full border border-gray-300 p-3 mb-6"
-          ></select>
+          <label class="block mb-2 tag text-sm">Odaberite datum</label>
+          <div class="mb-6 border border-gray-200 p-3">
+            <div class="flex justify-between items-center mb-3">
+              <button
+                type="button"
+                id="bkPrevMonth"
+                class="!bg-transparent !text-black !p-1 !text-xl"
+                aria-label="Prethodni mjesec"
+              >
+                &lsaquo;
+              </button>
+              <span id="bkMonthLabel" class="tag capitalize"></span>
+              <button
+                type="button"
+                id="bkNextMonth"
+                class="!bg-transparent !text-black !p-1 !text-xl"
+                aria-label="Sljedeći mjesec"
+              >
+                &rsaquo;
+              </button>
+            </div>
+            <div
+              class="grid grid-cols-7 gap-1 text-center text-xs mb-1 opacity-60"
+            >
+              <div>Pon</div>
+              <div>Uto</div>
+              <div>Sri</div>
+              <div>Čet</div>
+              <div>Pet</div>
+              <div>Sub</div>
+              <div>Ned</div>
+            </div>
+            <div id="bkCalendarGrid" class="grid grid-cols-7 gap-1"></div>
+          </div>
 
-          <label class="block mb-1 tag text-sm">Odaberite vrijeme</label>
-          <div id="bkSlotButtons" class="flex flex-wrap gap-2 mb-6"></div>
+          <div id="bkSlotWrap" class="hidden">
+            <label class="block mb-1 tag text-sm"
+              >Odaberite vrijeme &mdash;
+              <span id="bkSelectedDateLabel" class="normal-case"></span
+            ></label>
+            <div id="bkSlotButtons" class="flex flex-wrap gap-2 mb-6"></div>
+          </div>
 
           <div id="bkDetails" class="hidden">
             <label class="block mb-1 tag text-sm">Ime</label>
@@ -799,12 +831,18 @@
       let bkAllSlots = [];
       let bkSelectedDate = null;
       let bkSelectedSlot = null;
+      let bkViewYear = null;
+      let bkViewMonth = null; // 0-indexed
 
       const bkLoading = document.getElementById("bkLoading");
       const bkForm = document.getElementById("bkForm");
       const bkEmpty = document.getElementById("bkEmpty");
       const bkSuccess = document.getElementById("bkSuccess");
-      const bkDateSelect = document.getElementById("bkDateSelect");
+      const bkCalendarGrid = document.getElementById("bkCalendarGrid");
+      const bkMonthLabel = document.getElementById("bkMonthLabel");
+      const bkPrevMonth = document.getElementById("bkPrevMonth");
+      const bkNextMonth = document.getElementById("bkNextMonth");
+      const bkSlotWrap = document.getElementById("bkSlotWrap");
       const bkSlotButtons = document.getElementById("bkSlotButtons");
       const bkDetails = document.getElementById("bkDetails");
       const bkStatusMsg = document.getElementById("bkStatusMsg");
@@ -831,44 +869,125 @@
 
         bkLoading.classList.add("hidden");
 
-        if (!bkAllSlots.length) {
+        if (!bkAllSlots.some((s) => s.available)) {
           bkEmpty.classList.remove("hidden");
           return;
         }
 
         bkForm.classList.remove("hidden");
-        const dates = [...new Set(bkAllSlots.map((s) => s.date))];
-        bkDateSelect.innerHTML = dates
-          .map((d) => `<option value="${d}">${bkFormatDateOption(d)}</option>`)
-          .join("");
-        bkSelectedDate = dates[0];
-        bkRenderSlots();
+        const today = new Date();
+        bkViewYear = today.getFullYear();
+        bkViewMonth = today.getMonth();
+        bkRenderCalendar();
       }
+
+      function bkWindowEnd() {
+        const d = new Date();
+        d.setMonth(d.getMonth() + 2);
+        return d;
+      }
+
+      function bkRenderCalendar() {
+        const availableDates = new Set(
+          bkAllSlots.filter((s) => s.available).map((s) => s.date)
+        );
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const windowEnd = bkWindowEnd();
+
+        const first = new Date(bkViewYear, bkViewMonth, 1);
+        bkMonthLabel.textContent = first.toLocaleDateString("hr-HR", {
+          month: "long",
+          year: "numeric",
+        });
+
+        const startWeekday = (first.getDay() + 6) % 7; // pon=0
+        const daysInMonth = new Date(bkViewYear, bkViewMonth + 1, 0).getDate();
+
+        let html = "";
+        for (let i = 0; i < startWeekday; i++) html += "<div></div>";
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dateStr = `${bkViewYear}-${String(bkViewMonth + 1).padStart(
+            2,
+            "0"
+          )}-${String(d).padStart(2, "0")}`;
+          const isAvailable = availableDates.has(dateStr);
+          const isSelected = dateStr === bkSelectedDate;
+          if (isAvailable) {
+            html += `<button type="button" data-date="${dateStr}" class="bk-day-btn h-9 text-sm ${
+              isSelected
+                ? "!bg-[#bc8e31] !text-white"
+                : "!bg-transparent !text-black !border !border-[#bc8e31]"
+            }">${d}</button>`;
+          } else {
+            html += `<div class="h-9 text-sm flex items-center justify-center text-gray-300">${d}</div>`;
+          }
+        }
+        bkCalendarGrid.innerHTML = html;
+
+        const atMinMonth =
+          bkViewYear === today.getFullYear() &&
+          bkViewMonth === today.getMonth();
+        const atMaxMonth =
+          bkViewYear === windowEnd.getFullYear() &&
+          bkViewMonth === windowEnd.getMonth();
+        bkPrevMonth.disabled = atMinMonth;
+        bkPrevMonth.classList.toggle("opacity-20", atMinMonth);
+        bkNextMonth.disabled = atMaxMonth;
+        bkNextMonth.classList.toggle("opacity-20", atMaxMonth);
+      }
+
+      bkPrevMonth.addEventListener("click", () => {
+        bkViewMonth -= 1;
+        if (bkViewMonth < 0) {
+          bkViewMonth = 11;
+          bkViewYear -= 1;
+        }
+        bkRenderCalendar();
+      });
+
+      bkNextMonth.addEventListener("click", () => {
+        bkViewMonth += 1;
+        if (bkViewMonth > 11) {
+          bkViewMonth = 0;
+          bkViewYear += 1;
+        }
+        bkRenderCalendar();
+      });
+
+      bkCalendarGrid.addEventListener("click", (e) => {
+        const btn = e.target.closest(".bk-day-btn");
+        if (!btn) return;
+        bkSelectedDate = btn.dataset.date;
+        bkRenderCalendar();
+        bkRenderSlots();
+      });
 
       function bkRenderSlots() {
         bkSelectedSlot = null;
         bkDetails.classList.add("hidden");
+        bkSlotWrap.classList.remove("hidden");
+        document.getElementById("bkSelectedDateLabel").textContent =
+          bkFormatDateOption(bkSelectedDate);
         const daySlots = bkAllSlots.filter((s) => s.date === bkSelectedDate);
         bkSlotButtons.innerHTML = daySlots
-          .map(
-            (s) =>
-              `<button type="button" data-slot="${s.slotIndex}" class="!bg-transparent !text-black !border !border-solid !border-[#bc8e31] bk-slot-btn">${s.label}</button>`
+          .map((s) =>
+            s.available
+              ? `<button type="button" data-slot="${s.slotIndex}" class="!bg-transparent !text-black !border !border-solid !border-[#bc8e31] bk-slot-btn">${s.label}</button>`
+              : `<button type="button" disabled class="!bg-gray-100 !text-gray-400 !border !border-solid !border-gray-200 cursor-not-allowed">${s.label} &middot; zauzeto</button>`
           )
           .join("");
       }
-
-      bkDateSelect.addEventListener("change", () => {
-        bkSelectedDate = bkDateSelect.value;
-        bkRenderSlots();
-      });
 
       bkSlotButtons.addEventListener("click", (e) => {
         const btn = e.target.closest(".bk-slot-btn");
         if (!btn) return;
         bkSelectedSlot = Number(btn.dataset.slot);
-        document
-          .querySelectorAll(".bk-slot-btn")
-          .forEach((b) => b.classList.remove("!bg-[#bc8e31]", "!text-white"));
+        document.querySelectorAll(".bk-slot-btn").forEach((b) => {
+          b.classList.remove("!bg-[#bc8e31]", "!text-white");
+          b.classList.add("!bg-transparent", "!text-black");
+        });
+        btn.classList.remove("!bg-transparent", "!text-black");
         btn.classList.add("!bg-[#bc8e31]", "!text-white");
         bkDetails.classList.remove("hidden");
       });
@@ -908,7 +1027,13 @@
           if (!res.ok) {
             bkStatusMsg.textContent = data.error || "Došlo je do greške.";
             bkSubmitBtn.disabled = false;
-            if (res.status === 409) await bkLoadAvailability();
+            if (res.status === 409) {
+              bkSelectedDate = null;
+              bkSelectedSlot = null;
+              bkSlotWrap.classList.add("hidden");
+              bkDetails.classList.add("hidden");
+              await bkLoadAvailability();
+            }
             return;
           }
           bkForm.classList.add("hidden");

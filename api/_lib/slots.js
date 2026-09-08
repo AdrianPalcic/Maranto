@@ -37,17 +37,6 @@ function overlaps(aStart, aEnd, bStart, bEnd) {
   return aStart < bEnd && aEnd > bStart;
 }
 
-// Filtrira kandidate protiv busy perioda (svaki busy = {start, end} ISO stringovi)
-function filterAvailable(candidates, busyPeriods) {
-  const busy = busyPeriods.map((b) => ({
-    start: DateTime.fromISO(b.start),
-    end: DateTime.fromISO(b.end),
-  }));
-  return candidates.filter(
-    (c) => !busy.some((b) => overlaps(c.start, c.end, b.start, b.end))
-  );
-}
-
 function getSlotByKey(date, slotIndex, now = DateTime.now().setZone(TIMEZONE)) {
   const day = DateTime.fromISO(date, { zone: TIMEZONE }).startOf("day");
   const slot = SLOTS[slotIndex];
@@ -61,4 +50,4 @@ function getSlotByKey(date, slotIndex, now = DateTime.now().setZone(TIMEZONE)) {
   return { date, slotIndex, start, end };
 }
 
-module.exports = { generateCandidateSlots, filterAvailable, getSlotByKey, overlaps };
+module.exports = { generateCandidateSlots, getSlotByKey, overlaps };
