@@ -76,20 +76,85 @@
   <body class="mx-auto max-w-[1700px]">
     <main>
       <header
-        class="flex px-10 py-4 justify-between items-center absolute w-full z-10"
+        class="flex px-4 sm:px-10 py-4 justify-between items-center absolute w-full z-10"
       >
-        <div class="w-[150px] h-[100px] logo">
+        <div class="w-[100px] h-[70px] sm:w-[150px] sm:h-[100px] logo shrink-0">
           <img
             src="/logo.png"
             alt="Maranto salon odijal logo"
             class="w-full h-full object-cover"
           />
         </div>
-        <div class="flex gap-2">
-          <a href="/booking.html"><button>Rezerviraj termin</button></a>
+        <div class="hidden sm:flex gap-2">
+          <a href="#rezervacija"><button>Rezerviraj termin</button></a>
           <a href="tel:0919165292"><button>Kontakt</button></a>
         </div>
+
+        <button
+          id="mobileMenuBtn"
+          class="sm:hidden text-white"
+          aria-label="Otvori meni"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-9 h-9"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            />
+          </svg>
+        </button>
       </header>
+
+      <div
+        id="mobileMenu"
+        class="hidden sm:hidden fixed inset-0 bg-[#1A1A1A] z-30 flex-col items-center justify-center gap-8"
+      >
+        <button
+          id="mobileMenuClose"
+          class="absolute top-4 right-4 text-white"
+          aria-label="Zatvori meni"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-9 h-9"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <a href="#artikli" class="mobile-nav-link text-white text-2xl tag"
+          >Artikli</a
+        >
+        <a href="#galerija" class="mobile-nav-link text-white text-2xl tag"
+          >Galerija</a
+        >
+        <a href="#rezervacija" class="mobile-nav-link text-white text-2xl tag"
+          >Rezerviraj termin</a
+        >
+        <a href="#kontakt" class="mobile-nav-link text-white text-2xl tag"
+          >Kontakt</a
+        >
+        <a
+          href="tel:0919165292"
+          class="mobile-nav-link !text-[#bc8e31] text-2xl tag"
+          >Nazovi nas</a
+        >
+      </div>
 
       <section class="hero w-full h-[100dvh] relative">
         <img
@@ -109,8 +174,10 @@
             Biramo samo vrhunske materijale i krojeve koji spajaju tradiciju i
             suvremenost.
           </h2>
-          <div class="flex w-full justify-center sm:justify-normal gap-2">
-            <a href="/booking.html"
+          <div
+            class="flex flex-wrap w-full justify-center sm:justify-normal gap-2"
+          >
+            <a href="#rezervacija"
               ><button class="w-fit text-black">Rezerviraj termin</button></a
             >
             <a href="#kontakt"
@@ -367,6 +434,67 @@
         </div>
       </section>
 
+      <section id="rezervacija" class="my-20 px-4 sm:px-10">
+        <p class="tag text-[#bc8e31] text-center">Termin</p>
+        <h1 class="text-4xl sm:text-5xl text-center">
+          <span class="text-[#bc8e31]">Rezervirajte</span> isprobavanje
+        </h1>
+        <p class="text-center mb-10 opacity-70">
+          Ponedjeljak – petak, 12:00 – 19:00. Isprobavanje traje 1 sat.
+        </p>
+
+        <div id="bkLoading" class="text-center py-10">Učitavanje termina...</div>
+
+        <div id="bkForm" class="hidden max-w-md mx-auto">
+          <label class="block mb-1 tag text-sm">Odaberite datum</label>
+          <select
+            id="bkDateSelect"
+            class="w-full border border-gray-300 p-3 mb-6"
+          ></select>
+
+          <label class="block mb-1 tag text-sm">Odaberite vrijeme</label>
+          <div id="bkSlotButtons" class="flex flex-wrap gap-2 mb-6"></div>
+
+          <div id="bkDetails" class="hidden">
+            <label class="block mb-1 tag text-sm">Ime</label>
+            <input id="bkFirstName" class="w-full border border-gray-300 p-3 mb-4" />
+
+            <label class="block mb-1 tag text-sm">Prezime</label>
+            <input id="bkLastName" class="w-full border border-gray-300 p-3 mb-4" />
+
+            <label class="block mb-1 tag text-sm">Telefon</label>
+            <input
+              id="bkPhone"
+              type="tel"
+              class="w-full border border-gray-300 p-3 mb-4"
+            />
+
+            <label class="block mb-1 tag text-sm">Email</label>
+            <input
+              id="bkEmail"
+              type="email"
+              class="w-full border border-gray-300 p-3 mb-6"
+            />
+
+            <button id="bkSubmitBtn" class="w-full text-black">
+              Potvrdi rezervaciju
+            </button>
+          </div>
+
+          <p id="bkStatusMsg" class="mt-4 text-center"></p>
+        </div>
+
+        <div id="bkSuccess" class="hidden text-center py-10">
+          <h2 class="text-2xl mb-2">Rezervacija potvrđena!</h2>
+          <p id="bkSuccessDetails" class="mb-4"></p>
+          <p class="opacity-70">Potvrda je poslana na vaš email.</p>
+        </div>
+
+        <div id="bkEmpty" class="hidden text-center py-10">
+          <p>Trenutno nema slobodnih termina. Kontaktirajte nas izravno.</p>
+        </div>
+      </section>
+
       <section id="kontakt" class="my-20 px-4 sm:px-10">
         <p class="tag text-[#bc8e31]">Kontakt</p>
         <h1 class="text-4xl sm:text-5xl">
@@ -514,6 +642,31 @@
     </main>
 
     <script>
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const mobileMenuClose = document.getElementById("mobileMenuClose");
+      const mobileMenu = document.getElementById("mobileMenu");
+
+      function openMobileMenu() {
+        mobileMenu.classList.remove("hidden");
+        mobileMenu.classList.add("flex");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeMobileMenu() {
+        mobileMenu.classList.add("hidden");
+        mobileMenu.classList.remove("flex");
+        document.body.style.overflow = "";
+      }
+
+      mobileMenuBtn.addEventListener("click", openMobileMenu);
+      mobileMenuClose.addEventListener("click", closeMobileMenu);
+      document.querySelectorAll(".mobile-nav-link").forEach((link) => {
+        link.addEventListener("click", closeMobileMenu);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeMobileMenu();
+      });
+
       // 1. Definiraj recenzije
       const reviews = [
         {
@@ -640,6 +793,136 @@
         if (e.key === "ArrowLeft") showPrev();
         if (e.key === "ArrowRight") showNext();
       });
+    </script>
+
+    <script>
+      let bkAllSlots = [];
+      let bkSelectedDate = null;
+      let bkSelectedSlot = null;
+
+      const bkLoading = document.getElementById("bkLoading");
+      const bkForm = document.getElementById("bkForm");
+      const bkEmpty = document.getElementById("bkEmpty");
+      const bkSuccess = document.getElementById("bkSuccess");
+      const bkDateSelect = document.getElementById("bkDateSelect");
+      const bkSlotButtons = document.getElementById("bkSlotButtons");
+      const bkDetails = document.getElementById("bkDetails");
+      const bkStatusMsg = document.getElementById("bkStatusMsg");
+      const bkSubmitBtn = document.getElementById("bkSubmitBtn");
+
+      function bkFormatDateOption(dateStr) {
+        const d = new Date(dateStr + "T00:00:00");
+        return d.toLocaleDateString("hr-HR", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+      }
+
+      async function bkLoadAvailability() {
+        try {
+          const res = await fetch("/api/availability");
+          const data = await res.json();
+          bkAllSlots = data.slots || [];
+        } catch (e) {
+          bkAllSlots = [];
+        }
+
+        bkLoading.classList.add("hidden");
+
+        if (!bkAllSlots.length) {
+          bkEmpty.classList.remove("hidden");
+          return;
+        }
+
+        bkForm.classList.remove("hidden");
+        const dates = [...new Set(bkAllSlots.map((s) => s.date))];
+        bkDateSelect.innerHTML = dates
+          .map((d) => `<option value="${d}">${bkFormatDateOption(d)}</option>`)
+          .join("");
+        bkSelectedDate = dates[0];
+        bkRenderSlots();
+      }
+
+      function bkRenderSlots() {
+        bkSelectedSlot = null;
+        bkDetails.classList.add("hidden");
+        const daySlots = bkAllSlots.filter((s) => s.date === bkSelectedDate);
+        bkSlotButtons.innerHTML = daySlots
+          .map(
+            (s) =>
+              `<button type="button" data-slot="${s.slotIndex}" class="!bg-transparent !text-black !border !border-solid !border-[#bc8e31] bk-slot-btn">${s.label}</button>`
+          )
+          .join("");
+      }
+
+      bkDateSelect.addEventListener("change", () => {
+        bkSelectedDate = bkDateSelect.value;
+        bkRenderSlots();
+      });
+
+      bkSlotButtons.addEventListener("click", (e) => {
+        const btn = e.target.closest(".bk-slot-btn");
+        if (!btn) return;
+        bkSelectedSlot = Number(btn.dataset.slot);
+        document
+          .querySelectorAll(".bk-slot-btn")
+          .forEach((b) => b.classList.remove("!bg-[#bc8e31]", "!text-white"));
+        btn.classList.add("!bg-[#bc8e31]", "!text-white");
+        bkDetails.classList.remove("hidden");
+      });
+
+      bkSubmitBtn.addEventListener("click", async () => {
+        const firstName = document.getElementById("bkFirstName").value.trim();
+        const lastName = document.getElementById("bkLastName").value.trim();
+        const phone = document.getElementById("bkPhone").value.trim();
+        const email = document.getElementById("bkEmail").value.trim();
+
+        if (!firstName || !lastName || !phone || !email) {
+          bkStatusMsg.textContent = "Molimo popunite sva polja.";
+          return;
+        }
+        if (bkSelectedSlot === null) {
+          bkStatusMsg.textContent = "Molimo odaberite termin.";
+          return;
+        }
+
+        bkSubmitBtn.disabled = true;
+        bkStatusMsg.textContent = "Slanje...";
+
+        try {
+          const res = await fetch("/api/book", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              date: bkSelectedDate,
+              slotIndex: bkSelectedSlot,
+              firstName,
+              lastName,
+              phone,
+              email,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            bkStatusMsg.textContent = data.error || "Došlo je do greške.";
+            bkSubmitBtn.disabled = false;
+            if (res.status === 409) await bkLoadAvailability();
+            return;
+          }
+          bkForm.classList.add("hidden");
+          bkSuccess.classList.remove("hidden");
+          document.getElementById(
+            "bkSuccessDetails"
+          ).textContent = `${data.date}, ${data.time}`;
+        } catch (e) {
+          bkStatusMsg.textContent = "Došlo je do greške. Pokušajte ponovno.";
+          bkSubmitBtn.disabled = false;
+        }
+      });
+
+      bkLoadAvailability();
     </script>
   </body>
 </html>
