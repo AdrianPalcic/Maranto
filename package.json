@@ -1,0 +1,11 @@
+{
+  "name": "maranto-booking",
+  "private": true,
+  "version": "1.0.0",
+  "type": "commonjs",
+  "dependencies": {
+    "google-auth-library": "^9.15.0",
+    "luxon": "^3.5.0",
+    "resend": "^4.0.1"
+  }
+}
