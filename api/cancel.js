@@ -58,9 +58,23 @@ module.exports = async (req, res) => {
         timeLabel: tLabel,
       })
     );
-    await Promise.all(jobs);
+    const emailResults = await Promise.allSettled(jobs);
+    const emailWarning = emailResults.some((result) => result.status === "rejected");
+    if (emailWarning) {
+      console.error("Booking cancelled but email delivery failed", {
+        eventId: String(eventId),
+        results: emailResults.map((result) =>
+          result.status === "rejected"
+            ? { status: result.status, error: result.reason.message }
+            : { status: result.status, emailId: result.value.id }
+        ),
+      });
+    }
 
-    res.status(200).send(page("Termin otkazan", `Vaš termin ${dLabel} u ${tLabel} je uspješno otkazan.`));
+    const message = `Vaš termin ${dLabel} u ${tLabel} je uspješno otkazan.${
+      emailWarning ? " Potvrda e-poštom nije poslana; kontaktirajte nas ako vam je potrebna." : ""
+    }`;
+    res.status(200).send(page("Termin otkazan", message));
   } catch (err) {
     console.error(err);
     res.status(500).send(page("Greška", "Nismo uspjeli otkazati termin. Kontaktirajte nas izravno."));

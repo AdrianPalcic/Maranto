@@ -1040,7 +1040,9 @@
           bkSuccess.classList.remove("hidden");
           document.getElementById(
             "bkSuccessDetails"
-          ).textContent = `${data.date}, ${data.time}`;
+          ).textContent = data.emailWarning
+            ? `${data.date}, ${data.time}. Termin je rezerviran, ali potvrda e-poštom nije poslana. Molimo kontaktirajte nas telefonom.`
+            : `${data.date}, ${data.time}`;
         } catch (e) {
           bkStatusMsg.textContent = "Došlo je do greške. Pokušajte ponovno.";
           bkSubmitBtn.disabled = false;

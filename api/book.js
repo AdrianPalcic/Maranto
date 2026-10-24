@@ -73,7 +73,7 @@ module.exports = async (req, res) => {
     const tLabel = timeLabel(slot.start, slot.end);
     const cancelUrl = buildCancelUrl(event.id);
 
-    await Promise.all([
+    const emailResults = await Promise.allSettled([
       sendCustomerConfirmation({
         to: emailClean,
         firstName: first,
@@ -93,7 +93,24 @@ module.exports = async (req, res) => {
       }),
     ]);
 
-    res.status(200).json({ ok: true, date: dLabel, time: tLabel });
+    const emailWarning = emailResults.some((result) => result.status === "rejected");
+    if (emailWarning) {
+      console.error("Booking created but email delivery failed", {
+        eventId: event.id,
+        results: emailResults.map((result) =>
+          result.status === "rejected"
+            ? { status: result.status, error: result.reason.message }
+            : { status: result.status, emailId: result.value.id }
+        ),
+      });
+    }
+
+    res.status(200).json({
+      ok: true,
+      date: dLabel,
+      time: tLabel,
+      emailWarning,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Greška pri kreiranju rezervacije" });

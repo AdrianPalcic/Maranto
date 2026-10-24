@@ -6,6 +6,14 @@ function getResend() {
   return cachedResend;
 }
 
+async function sendEmail(options) {
+  const { data, error } = await getResend().emails.send(options);
+  if (error) {
+    throw new Error(`Resend ${error.name}: ${error.message}`);
+  }
+  return data;
+}
+
 const GOLD = "#bc8e31";
 
 function wrapHtml(bodyHtml) {
@@ -27,7 +35,7 @@ async function sendCustomerConfirmation({ to, firstName, lastName, dateLabel, ti
     <p>Za sva ostala pitanja ili izmjenu termina, samo odgovorite na ovaj email i javit ćemo vam se.</p>
     <p>Radujemo se vašem posjetu!</p>
   `);
-  return getResend().emails.send({
+  return sendEmail({
     from: process.env.RESEND_FROM_EMAIL,
     to,
     reply_to: process.env.CLIENT_NOTIFY_EMAIL,
@@ -45,7 +53,7 @@ async function sendClientNotification({ firstName, lastName, phone, email, dateL
     Email: ${email}</p>
     ${eventLink ? `<p><a href="${eventLink}" style="color:${GOLD};">Otvori u Google kalendaru</a></p>` : ""}
   `);
-  return getResend().emails.send({
+  return sendEmail({
     from: process.env.RESEND_FROM_EMAIL,
     to: process.env.CLIENT_NOTIFY_EMAIL,
     reply_to: email,
@@ -60,7 +68,7 @@ async function sendCustomerCancelled({ to, firstName, lastName, dateLabel, timeL
     <p>Vaš termin ${dateLabel} u ${timeLabel} je otkazan.</p>
     <p>Ako želite zakazati novi termin ili imate pitanja, slobodno odgovorite na ovaj email.</p>
   `);
-  return getResend().emails.send({
+  return sendEmail({
     from: process.env.RESEND_FROM_EMAIL,
     to,
     reply_to: process.env.CLIENT_NOTIFY_EMAIL,
@@ -75,7 +83,7 @@ async function sendClientCancelNotification({ firstName, lastName, dateLabel, ti
     <p style="font-size: 18px; font-weight: bold;">${dateLabel}, ${timeLabel}</p>
     <p>${firstName} ${lastName}</p>
   `);
-  return getResend().emails.send({
+  return sendEmail({
     from: process.env.RESEND_FROM_EMAIL,
     to: process.env.CLIENT_NOTIFY_EMAIL,
     subject: `Otkazan termin – ${firstName} ${lastName}`,
