@@ -16,6 +16,18 @@ button {
 button:hover {
   background-color: #b07f1f;
 }
+
+.header-actions {
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 20px);
+}
+
+.header-actions button {
+  padding: 6px clamp(10px, 1.2vw, 15px);
+  font-size: clamp(14px, 1.2vw, 18px);
+  white-space: nowrap;
+}
+
 h1 {
   font-family: "Bacasime Antique", serif;
   text-transform: uppercase;
